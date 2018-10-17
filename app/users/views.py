@@ -6,17 +6,21 @@ from rest_framework.response import Response
 from django.http import Http404
 from app.users.serializers import ProfileSerializer,UserSerializer
 from app.users.models import UserProfile
-from app.lib.common import RequestOverwrite
+from app.lib.common import RequestOverwrite,AccessUserObj
 from app.lib.response import ApiResponse
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-
+from app.lib.permissions import IsAuthenticatedOrCreate
 
 class UserApi(APIView):
     
-    # permission_classes = (IsAuthenticatedOrCreate, )
+    
     def post(self,request):
-        """This api use to create user.'Email' and 'Password' field is required"""
+        """
+           This api create user.'Email' and 'Password' field is required.
+           url: user/create
+
+        """
         try:
             user_info = UserSerializer(data = request.data)
             if not user_info.is_valid():
@@ -37,15 +41,19 @@ class UserApi(APIView):
     def create_user(self,request):
         try:
             user = User.objects.create_user(username=request.data.get('email'),
-            email=request.data.get('email'),password=request.data.get('password'),is_staff=True)
+            email=request.data.get('email'),password=request.data.get('password'),is_staff=True,is_active=True)
             return user
         except Exception as err:
             print(err)
             return None
 
+    permission_classes = (IsAuthenticatedOrCreate, )
     def put(self,request,user_id):
         try:
-            """This api use to update user details """
+            """
+            This api update user details 
+            url: user/edit/user_id
+            """
             if(request.data.get('email')):
                 try:
                     user = User.objects.get(email=request.data.get('email'))
@@ -66,15 +74,15 @@ class UserApi(APIView):
             print(err)
             return ApiResponse().error("Error", 500)
 
+    permission_classes = (IsAuthenticatedOrCreate, )
     def delete(self,request,user_id):
         try:
-            """This api use to make user disable"""
-            import random,string
+            """
+               This api make user disable
+               url: user/disable/user_id 
+            """
             email_val = User.objects.get(id=user_id).email
-            random = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
-            usrename = random + "@gmail.com"
-            email = random + "@gmail.com"
-            User.objects.filter(id = user_id).update(username = usrename,email= email,is_active=False)
+            User.objects.filter(id = user_id).update(is_active=False)
             UserProfile.objects.filter(user=user_id).update(is_deleted=True,deleted_val = email_val)
             return ApiResponse().success("User disabled", 200)
         except Exception as err:
@@ -86,6 +94,10 @@ class LoginApi(APIView):
     
     
     def post(self,request):
+        """
+           This api make user login.
+           url: user/login
+        """
         try:
             if request.data.get('email') and request.data.get('password'):
                 user = UserSerializer(data = request.data)
@@ -118,3 +130,61 @@ class LoginApi(APIView):
         except Exception as err:
             print(err)
             return ApiResponse().error("Error while login", 500)
+
+
+
+class ChangePassword(APIView):
+
+    permission_classes = (IsAuthenticatedOrCreate, )
+    def post(self,request):
+        try:
+            """
+                User can change password."old_password","new_password","confirm_new_password" field is required.
+                url: user/changepassword
+
+            """
+            user = AccessUserObj().fromToken(request).user
+            if not request.data.get("old_password"):
+                return ApiResponse().error("Please enter current password.",400)
+            if UserProfile.objects.filter(is_deleted=True, user=user):
+                return ApiResponse().success("User does not exist",400) 
+            if request.data.get("old_password") is not None:
+                if authenticate(username = user, password = request.data.get("old_password")) is None:
+                    return ApiResponse().error("Invalid current password entered.",400)
+            password = request.data.get("new_password")
+            confirm_new_password = request.data.get("confirm_new_password")
+            if password != '' and confirm_new_password !='':
+                
+                if password != confirm_new_password:
+                    return ApiResponse().error("New Password and Confirm Password does not match",400)
+                user.set_password(request.data.get("new_password"))
+                user.save()
+                return ApiResponse().success("password changed successfully", 200)
+                
+            return ApiResponse().error("Password empty", 400)   
+        except Exception as err:
+            print(err)
+            return ApiResponse().error("Error while change password", 500)
+
+
+class ForGotPassword(APIView):
+    
+    def post(self,request):
+        """
+            Users can send a forgot password email and recover account
+            url:user/forgotpassword
+
+        """
+        try:
+            user = User.objects.get(email = request.data.get("email"))
+        except Exception as err:
+            return ApiResponse().error("This email is not registered", 400)
+        password = User.objects.make_random_password()
+        user.set_password(password)
+        user.save()
+        frm = 'XYZ'
+        body = "Hi there. \n You have requested a new password for your account.\nYour temporary password is "+password+""
+        if Email.sendMail("Forgot password",body,frm,user.email) is True:
+            return ApiResponse().success("New password have to sent to your email",200)    
+        return ApiResponse().error("Error while sending the email",500) 
+        
