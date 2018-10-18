@@ -11,6 +11,8 @@ from app.lib.response import ApiResponse
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from app.lib.permissions import IsAuthenticatedOrCreate
+from app.lib.email import Email
+
 
 class UserApi(APIView):
     
@@ -51,8 +53,8 @@ class UserApi(APIView):
     def put(self,request,user_id):
         try:
             """
-            This api update user details 
-            url: user/edit/user_id
+                This api update user details 
+                url: user/edit/user_id
             """
             if(request.data.get('email')):
                 try:
@@ -69,7 +71,8 @@ class UserApi(APIView):
                     update_data.save()
                     return ApiResponse().success(update_data.data, 200)
                 else:
-                    return ApiResponse().error(update_data.errors, 400) 
+                    return ApiResponse().error(update_data.errors, 400)
+            return ApiResponse().error("Email not be empty", 400) 
         except Exception as err:
             print(err)
             return ApiResponse().error("Error", 500)
@@ -137,12 +140,11 @@ class ChangePassword(APIView):
 
     permission_classes = (IsAuthenticatedOrCreate, )
     def post(self,request):
+        """
+            User can change password."old_password","new_password","confirm_new_password" field is required.
+            url: user/changepassword
+        """
         try:
-            """
-                User can change password."old_password","new_password","confirm_new_password" field is required.
-                url: user/changepassword
-
-            """
             user = AccessUserObj().fromToken(request).user
             if not request.data.get("old_password"):
                 return ApiResponse().error("Please enter current password.",400)
@@ -168,12 +170,11 @@ class ChangePassword(APIView):
 
 
 class ForGotPassword(APIView):
-    
+    # permission_classes = (IsAuthenticatedOrCreate, )
     def post(self,request):
         """
             Users can send a forgot password email and recover account
             url:user/forgotpassword
-
         """
         try:
             user = User.objects.get(email = request.data.get("email"))
