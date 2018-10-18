@@ -1,9 +1,5 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from rest_framework import status
-from rest_framework.response import Response
-from django.http import Http404
 from app.users.serializers import ProfileSerializer,UserSerializer
 from app.users.models import UserProfile
 from app.lib.common import RequestOverwrite,AccessUserObj
@@ -79,11 +75,11 @@ class UserApi(APIView):
 
     permission_classes = (IsAuthenticatedOrCreate, )
     def delete(self,request,user_id):
+        """
+           This api make user disable
+           url: user/disable/user_id 
+        """
         try:
-            """
-               This api make user disable
-               url: user/disable/user_id 
-            """
             email_val = User.objects.get(id=user_id).email
             User.objects.filter(id = user_id).update(is_active=False)
             UserProfile.objects.filter(user=user_id).update(is_deleted=True,deleted_val = email_val)
