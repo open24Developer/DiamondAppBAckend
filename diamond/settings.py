@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.users',
+    'app.projects',
     'rest_framework.authtoken',
     'corsheaders',
 ]
@@ -79,9 +80,9 @@ WSGI_APPLICATION = 'diamond.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':'diamond_api',
+        'NAME':'diamond_db',
         'USER':'postgres',
-        'PASSWORD':'root',
+        'PASSWORD':'1234',
         'HOST':'localhost',
         'PORT':'',
        
