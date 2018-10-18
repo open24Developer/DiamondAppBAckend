@@ -45,6 +45,23 @@ class UserApi(APIView):
             print(err)
             return None
 
+    def get(self,request,user_id):
+        """
+           Get single user detail using user id.
+           url: project/detail/user_id
+        """
+        try:
+            if(user_id):
+                try:
+                    user_data = ProfileSerializer(UserProfile.objects.get(is_deleted=False, user=user_id))
+                except Exception as err:
+                    print(err)  
+                    return ApiResponse().error("please provide valid user id", 400)
+            return ApiResponse().success(user_data.data, 200)
+        except Exception as err: 
+            print(err) 
+            return ApiResponse().error("Error", 500)
+
     permission_classes = (IsAuthenticatedOrCreate, )
     def put(self,request,user_id):
         try:
