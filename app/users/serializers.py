@@ -26,7 +26,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id','user','first_name','last_name','deleted_val','is_deleted','created_at','updated_at','status')
+        fields = ('id','user','first_name','last_name','is_deleted','created_at','updated_at','status')
         extra_kwargs = {
            
             'email': {
