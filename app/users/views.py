@@ -62,7 +62,7 @@ class UserApi(APIView):
             print(err) 
             return ApiResponse().error("Error", 500)
 
-    permission_classes = (IsAuthenticatedOrCreate, )
+    # permission_classes = (IsAuthenticatedOrCreate, )
     def put(self,request,user_id):
         try:
             """
@@ -90,7 +90,7 @@ class UserApi(APIView):
             print(err)
             return ApiResponse().error("Error", 500)
 
-    permission_classes = (IsAuthenticatedOrCreate, )
+    # permission_classes = (IsAuthenticatedOrCreate, )
     def delete(self,request,user_id):
         """
            This api make user disable
@@ -152,7 +152,7 @@ class LoginApi(APIView):
 
 class ChangePassword(APIView):
 
-    permission_classes = (IsAuthenticatedOrCreate, )
+    # permission_classes = (IsAuthenticatedOrCreate, )
     def post(self,request):
         """
             User can change password."old_password","new_password","confirm_new_password" field is required.
