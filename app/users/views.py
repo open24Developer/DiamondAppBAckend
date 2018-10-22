@@ -115,6 +115,7 @@ class LoginApi(APIView):
            url: user/login
         """
         try:
+            import pdb;pdb.set_trace()
             if request.data.get('email') and request.data.get('password'):
                 user = UserSerializer(data = request.data)
                 if not user.is_valid():

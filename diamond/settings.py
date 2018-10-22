@@ -25,7 +25,7 @@ SECRET_KEY = '_htj8kv)(j@^@&9#!ar$x2b^gmi=hkmf7jy^+8q%pfnz@!+lcc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app.users',
     'app.projects',
+    'app.employee',
     'rest_framework.authtoken',
     'corsheaders',
 ]
@@ -80,9 +81,9 @@ WSGI_APPLICATION = 'diamond.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':'diamond_db',
+        'NAME':'diamond_api',
         'USER':'postgres',
-        'PASSWORD':'1234',
+        'PASSWORD':'root',
         'HOST':'localhost',
         'PORT':'',
        
