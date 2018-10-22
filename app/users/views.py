@@ -203,3 +203,17 @@ class ForGotPassword(APIView):
             return ApiResponse().success("New password have to sent to your email",200)    
         return ApiResponse().error("Error while sending the email",500) 
         
+
+class UserList(APIView):
+
+    def get(self,request):
+        """
+           Get all user detail.
+           url: user/list
+        """
+        try:
+            user_data = ProfileSerializer(UserProfile.objects.all(), many=True)
+            return ApiResponse().success(user_data.data, 200)
+        except Exception as err: 
+            print(err) 
+            return ApiResponse().error("Error", 500)

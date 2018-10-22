@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^user/edit/(?P<user_id>[0-9]+)$',views.UserApi.as_view()),
     url(r'^user/disable/(?P<user_id>[0-9]+)$',views.UserApi.as_view()),
     url(r'^user/create$',views.UserApi.as_view()),
+    url(r'^user/list$',views.UserList.as_view()),
     
 
 ]
