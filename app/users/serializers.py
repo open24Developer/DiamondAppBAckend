@@ -23,10 +23,11 @@ class UserSerializer(serializers.ModelSerializer):
         
 
 class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(source='user.email')
 
     class Meta:
         model = UserProfile
-        fields = ('id','user','first_name','last_name','is_deleted','created_at','updated_at','status')
+        fields = ('id','user', 'email','first_name','last_name','is_deleted','created_at','updated_at','status')
         extra_kwargs = {
            
             'email': {
