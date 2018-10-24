@@ -9,7 +9,7 @@ class EmployeeApi(APIView):
         """
            This api create new employee.
            url: employee/create
-           required field: employee(string),system_of_origin(string),project_status(string),database_stamp(string)
+           
         """
         try:
             project_data = EmployeeSerializer(data=request.data)
@@ -21,29 +21,49 @@ class EmployeeApi(APIView):
             return ApiResponse().error("Error while creating project",500)
 
 
+    # def delete(self,request,project_id):
+    #     """
+    #        This api make project disable
+    #        url: project/disable/project_id 
+    #     """
+    #     try:
+    #         project = Project.objects.filter(id = project_id,is_deleted=False).update(is_deleted=True)
+    #         if(project)==0:
+    #            return ApiResponse().success("Project not exists", 200) 
+    #         return ApiResponse().success("Project deleted successfully", 200)
+    #     except Exception as err:
+    #         print(err)
+    #         return ApiResponse().error("Please send valid project id", 400)
+
+
+class EmployeeDetail(APIView):
     def get(self,request,employee_id=None):
         """
            Get single employee detail using employee id.
            url: employee/detail/employee_id
-           Get all employees detail.
-           url: employee/list
         """
         try:
-            if(employee_id):
-                try:
-                    get_data = EmployeeSerializer(Employee.objects.get(id=employee_id))
-                except Exception as err:
-                    print(err)  
-                    return ApiResponse().error("please provide valid project id", 400)
-            else:
-                emplyee_data = Employee.objects.all()
-                get_data = EmployeeSerializer(emplyee_data, many=True)
+            get_data = EmployeeSerializer(Employee.objects.get(id=employee_id))
             return ApiResponse().success(get_data.data, 200)
         except Exception as err: 
             print(err) 
-            return ApiResponse().error("Error while getting the project details", 500)
+            return ApiResponse().error("please provide valid project id", 400)
 
+class EmployeeList(APIView):
+    def get(self,request):
+        """
+           Get all employees detail.
+           url: employee/list
+        """
+        try: 
+            emplyee_data = Employee.objects.all()
+            get_data = EmployeeSerializer(emplyee_data, many=True)
+            return ApiResponse().success(get_data.data, 200)
+        except Exception as err: 
+            print(err) 
+            return ApiResponse().error("Error while getting the employee list", 400)
 
+class EmployeeEdit(APIView):
     def put(self,request,employee_id):
         """
            This api Update employee details.
@@ -59,17 +79,3 @@ class EmployeeApi(APIView):
         except Exception as err:
             print(err)
             return ApiResponse().success("Error",500)
-
-    # def delete(self,request,project_id):
-    #     """
-    #        This api make project disable
-    #        url: project/disable/project_id 
-    #     """
-    #     try:
-    #         project = Project.objects.filter(id = project_id,is_deleted=False).update(is_deleted=True)
-    #         if(project)==0:
-    #            return ApiResponse().success("Project not exists", 200) 
-    #         return ApiResponse().success("Project deleted successfully", 200)
-    #     except Exception as err:
-    #         print(err)
-    #         return ApiResponse().error("Please send valid project id", 400)
