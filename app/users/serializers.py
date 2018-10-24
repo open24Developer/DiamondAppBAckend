@@ -23,11 +23,16 @@ class UserSerializer(serializers.ModelSerializer):
         
 
 class ProfileSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(source='user.email')
+    email = serializers.SerializerMethodField("getEmail")
+    def getEmail(self,obj):
+        try:
+            return User.objects.get(id=obj.user.id).email
+        except Exception as e:
+            print(e)
 
     class Meta:
         model = UserProfile
-        fields = ('id','user', 'email','first_name','last_name','is_deleted','created_at','updated_at','status')
+        fields = ('id','user','first_name','last_name','email','is_deleted','created_at','updated_at','status')
         extra_kwargs = {
            
             'email': {
