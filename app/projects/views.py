@@ -3,6 +3,7 @@ from app.projects.serializers import ProjectSerializer
 from app.lib.response import ApiResponse
 from app.projects.models import Project
 
+
 class ProjectApi(APIView):
 
     def post(self,request):
@@ -21,28 +22,38 @@ class ProjectApi(APIView):
             return ApiResponse().error("Error while creating project",500)
 
 
+class ProjectDeatil(APIView):
+
     def get(self,request,project_id=None):
         """
            Get single project detail using project id.
            url: project/detail/project_id
-           Get all projects detail.
+
+        """
+        try:
+            get_data = ProjectSerializer(Project.objects.get(is_deleted=False, id=project_id))
+            return ApiResponse().success(get_data.data, 200)
+        except Exception as err: 
+            print(err) 
+            return ApiResponse().error("please provide valid project id", 400)
+
+class ProjectList(APIView):
+
+    def get(self,request):
+        """
+           Get all project detail.
            url: project/list
         """
         try:
-            if(project_id):
-                try:
-                    get_data = ProjectSerializer(Project.objects.get(is_deleted=False, id=project_id))
-                except Exception as err:
-                    print(err)  
-                    return ApiResponse().error("please provide valid project id", 400)
-            else:
-                project_data = Project.objects.filter(is_deleted=False)
-                get_data = ProjectSerializer(project_data, many=True)
+            project_data = Project.objects.filter(is_deleted=False)
+            get_data = ProjectSerializer(project_data, many=True)
+            # pagination_class = ProjectPagination(get_data)
             return ApiResponse().success(get_data.data, 200)
         except Exception as err: 
             print(err) 
             return ApiResponse().error("Error while getting the project details", 500)
 
+class ProjectEdit(APIView):
 
     def put(self,request,project_id):
         """
@@ -59,6 +70,8 @@ class ProjectApi(APIView):
         except Exception as err:
             print(err)
             return ApiResponse().success("Error",500)
+
+class ProjectDisable(APIView):
 
     def delete(self,request,project_id):
         """
