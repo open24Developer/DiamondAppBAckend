@@ -9,31 +9,16 @@ class EmployeeApi(APIView):
         """
            This api create new employee.
            url: employee/create
-           
+
         """
         try:
-            project_data = EmployeeSerializer(data=request.data)
-            if not(project_data.is_valid()):
-                return ApiResponse().error(project_data.errors,400)
-            project_data.save()
-            return ApiResponse().success(project_data.data,200)
+            employee_data = EmployeeSerializer(data=request.data)
+            if not(employee_data.is_valid()):
+                return ApiResponse().error(employee_data.errors,400)
+            employee_data.save()
+            return ApiResponse().success(employee_data.data,200)
         except Exception as err:
             return ApiResponse().error("Error while creating project",500)
-
-
-    # def delete(self,request,project_id):
-    #     """
-    #        This api make project disable
-    #        url: project/disable/project_id 
-    #     """
-    #     try:
-    #         project = Project.objects.filter(id = project_id,is_deleted=False).update(is_deleted=True)
-    #         if(project)==0:
-    #            return ApiResponse().success("Project not exists", 200) 
-    #         return ApiResponse().success("Project deleted successfully", 200)
-    #     except Exception as err:
-    #         print(err)
-    #         return ApiResponse().error("Please send valid project id", 400)
 
 
 class EmployeeDetail(APIView):
@@ -79,3 +64,20 @@ class EmployeeEdit(APIView):
         except Exception as err:
             print(err)
             return ApiResponse().success("Error",500)
+
+
+# class EmployeeDisable(APIView):
+
+#     def delete(self,request,employee_id):
+#         """
+#            This api make employee disable
+#            url: employee/disable/employee_id 
+#         """
+#         try:
+#             employee = Employee.objects.filter(id = employee_id,is_deleted=False).update(is_deleted=True)
+#             if(employee)==0:
+#                return ApiResponse().success("Employee not exists", 200) 
+#             return ApiResponse().success("Employee deleted successfully", 200)
+#         except Exception as err:
+#             print(err)
+#             return ApiResponse().error("Please send valid employee id", 400)
