@@ -88,19 +88,53 @@ class LoginApi(APIView):
 
 
 
+# class ChangePassword(APIView):
+
+#     # permission_classes = (IsAuthenticatedOrCreate, )
+#     def post(self,request):
+#         """
+#             User can change password."old_password","new_password","confirm_new_password" field is required.
+#             url: user/changepassword
+#         """
+#         try:
+#             import pdb;pdb.set_trace();
+#             user = AccessUserObj().fromToken(request).user
+#             print(user,"+++++++++++")
+#             if not request.data.get("old_password"):
+#                 return ApiResponse().error("Please enter current password.",400)
+#             if UserProfile.objects.filter(is_deleted=True, user=user):
+#                 return ApiResponse().success("User does not exist",400) 
+#             if request.data.get("old_password") is not None:
+#                 if authenticate(username = user, password = request.data.get("old_password")) is None:
+#                     return ApiResponse().error("Invalid current password entered.",400)
+#             password = request.data.get("new_password")
+#             confirm_new_password = request.data.get("confirm_new_password")
+#             if password != '' and confirm_new_password !='':
+                
+#                 if password != confirm_new_password:
+#                     return ApiResponse().error("New Password and Confirm Password does not match",400)
+#                 user.set_password(request.data.get("new_password"))
+#                 user.save()
+#                 return ApiResponse().success("password changed successfully", 200)
+                
+#             return ApiResponse().error("Password empty", 400)   
+#         except Exception as err:
+#             print(err)
+#             return ApiResponse().error("Error while change password", 500)
+
 class ChangePassword(APIView):
 
     # permission_classes = (IsAuthenticatedOrCreate, )
-    def post(self,request):
+    def put(self,request,user_id):
         """
             User can change password."old_password","new_password","confirm_new_password" field is required.
-            url: user/changepassword
+            url: user/changepassword/user_id
         """
         try:
-            user = AccessUserObj().fromToken(request).user
+            user = User.objects.get(is_active=True, id=user_id)
             if not request.data.get("old_password"):
                 return ApiResponse().error("Please enter current password.",400)
-            if UserProfile.objects.filter(is_deleted=True, user=user):
+            if UserProfile.objects.filter(is_deleted=True, user=user_id):
                 return ApiResponse().success("User does not exist",400) 
             if request.data.get("old_password") is not None:
                 if authenticate(username = user, password = request.data.get("old_password")) is None:
@@ -113,8 +147,7 @@ class ChangePassword(APIView):
                     return ApiResponse().error("New Password and Confirm Password does not match",400)
                 user.set_password(request.data.get("new_password"))
                 user.save()
-                return ApiResponse().success("password changed successfully", 200)
-                
+                return ApiResponse().success("password changed successfully", 200)  
             return ApiResponse().error("Password empty", 400)   
         except Exception as err:
             print(err)

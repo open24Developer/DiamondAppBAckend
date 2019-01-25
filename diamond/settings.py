@@ -81,9 +81,9 @@ WSGI_APPLICATION = 'diamond.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':'diamond_api',
+        'NAME':'diamond_db',
         'USER':'postgres',
-        'PASSWORD':'root',
+        'PASSWORD':'1234',
         'HOST':'localhost',
         'PORT':'',
        
@@ -116,8 +116,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
     'rest_framework.authentication.TokenAuthentication',
     ),
-   
-
     
 }
 
